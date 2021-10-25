@@ -1,0 +1,22 @@
+name: 📦 Package
+
+on:
+  release:
+    types: published
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Install qgis-plugin-ci
+        run: pip3 install qgis-plugin-ci
+
+      - name: Package plugin
+        run: qgis-plugin-ci package --plugin-repo-url . ${GITHUB_REF/refs\/tags\//}
