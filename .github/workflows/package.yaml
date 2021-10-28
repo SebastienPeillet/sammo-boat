@@ -1,4 +1,4 @@
-name: 📦 Package
+name: 📦 Publish
 
 on:
   release:
@@ -20,3 +20,6 @@ jobs:
 
       - name: Package plugin
         run: qgis-plugin-ci package --plugin-repo-url . ${GITHUB_REF/refs\/tags\//}
+
+      - name: Deploy
+        run : scp plugins.xml sammo_boat.${GITHUB_REF/refs\/tags\//}.zip .
