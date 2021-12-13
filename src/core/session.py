@@ -17,8 +17,8 @@ from qgis.core import (
 
 from . import utils
 from .database import (
-    SammoDataBase,
     DB_NAME,
+    SammoDataBase,
 )
 from .layers import (
     SammoGpsLayer,
@@ -46,9 +46,11 @@ class SammoSession:
 
     @property
     def environmentLayer(self) -> QgsVectorLayer:
-        if self._environmentLayer:
-            return self._environmentLayer.layer
-        return None
+        if not self._environmentLayer:
+            self._environmentLayer = SammoEnvironmentLayer(
+                self.db, self.observersLayer
+            )
+        return self._environmentLayer.layer
 
     @property
     def gpsLayer(self) -> QgsVectorLayer:
@@ -56,23 +58,29 @@ class SammoSession:
 
     @property
     def followersLayer(self) -> QgsVectorLayer:
-        if self._followersLayer:
-            return self._followersLayer.layer
-        return None
+        if not self._followersLayer:
+            self._followersLayer = SammoFollowersLayer(
+                self.db, self.observersLayer, self.speciesLayer
+            )
+        return self._followersLayer.layer
 
     @property
     def observersLayer(self) -> QgsVectorLayer:
+        if not self._observersLayer:
+            self._observersLayer = SammoObserversLayer(self.db)
         return self._observersLayer.layer
 
     @property
     def speciesLayer(self) -> QgsVectorLayer:
+        if not self._speciesLayer:
+            self._speciesLayer = SammoSpeciesLayer(self.db)
         return self._speciesLayer.layer
 
     @property
     def sightingsLayer(self) -> QgsVectorLayer:
-        if self._sightingsLayer:
-            return self._sightingsLayer.layer
-        return None
+        if not self._sightingsLayer:
+            self._sightingsLayer = SammoSightingsLayer(self.db)
+        return self._sightingsLayer.layer
 
     def init(self, directory: str) -> None:
         new = self.db.init(directory)
