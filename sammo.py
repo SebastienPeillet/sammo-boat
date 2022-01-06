@@ -161,6 +161,8 @@ class Sammo:
         self.saveShortcut.activated.connect(self.session.saveAll)
 
     def unload(self):
+        self.iface.removeDockWidget(self.tableDock)
+        del self.tableDock
         self.gpsReader.stop()
 
         if self.threadSimuGps is not None and self.threadSimuGps.isProceeding:
@@ -174,6 +176,8 @@ class Sammo:
             self.simuGpsAction.unload()
 
         self.statusDock.unload()
+
+        self.iface.removeDockWidget(self.statusDock)
         del self.statusDock
         del self.toolbar
 
@@ -197,10 +201,46 @@ class Sammo:
         self.tableDock.init(
             self.session.environmentLayer, self.session.sightingsLayer
         )
+        QgsProject.instance().layerWillBeRemoved.connect(self.cleanTableDock)
 
         # init simu
         if self.simuGpsAction:
             self.simuGpsAction.onNewSession()
+
+    def cleanTableDock(self, layerId):
+        if layerId == self.session.environmentLayer.id():
+            self.tableDock.removeTable(self.session.environmentLayer.name())
+        elif layerId == self.session.sightingsLayer.id():
+            self.tableDock.removeTable(self.session.sightingsLayer.name())
+
+    def focusOn(self, old, new) -> None:
+        # Set the active on attribute table focus, to use undo/redo action
+        if not new:
+            return
+        if self.tableDock.widget():
+            tables = self.tableDock.widget().tables
+            if (
+                "Environment" in tables
+                and new
+                == self.tableDock.widget()
+                .tables["Environment"]
+                .findChild(QTableView, "mTableView")
+            ):
+                self.iface.setActiveLayer(self.session.environmentLayer)
+            elif (
+                "Sightings" in tables
+                and new
+                == self.tableDock.widget()
+                .tables["Sightings"]
+                .findChild(QTableView, "mTableView")
+            ):
+                self.iface.setActiveLayer(self.session.sightingsLayer)
+
+    def undo(self):
+        self.iface.activeLayer().undoStack().undo()
+
+    def redo(self):
+        self.iface.activeLayer().undoStack().redo()
 
     def onMergeAction(self) -> None:
         self.mergeDialog = SammoMergeDialog()

@@ -53,6 +53,11 @@ class SammoTableDock(QDockWidget):
         self.setWidget(self._widget)
         self.iface.addDockWidget(Qt.BottomDockWidgetArea, self)
 
+    def removeTable(self, name):
+        if name in self._widget.tables:
+            self._widget.tables[name].close()
+            self._widget.tables.pop(name, None)
+
     def refresh(self, layer):
         table = self._widget.tables[layer.name()]
         SammoAttributeTable.refresh(table)
