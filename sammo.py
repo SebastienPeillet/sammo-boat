@@ -213,35 +213,6 @@ class Sammo:
         elif layerId == self.session.sightingsLayer.id():
             self.tableDock.removeTable(self.session.sightingsLayer.name())
 
-    def focusOn(self, old, new) -> None:
-        # Set the active on attribute table focus, to use undo/redo action
-        if not new:
-            return
-        if self.tableDock.widget():
-            tables = self.tableDock.widget().tables
-            if (
-                "Environment" in tables
-                and new
-                == self.tableDock.widget()
-                .tables["Environment"]
-                .findChild(QTableView, "mTableView")
-            ):
-                self.iface.setActiveLayer(self.session.environmentLayer)
-            elif (
-                "Sightings" in tables
-                and new
-                == self.tableDock.widget()
-                .tables["Sightings"]
-                .findChild(QTableView, "mTableView")
-            ):
-                self.iface.setActiveLayer(self.session.sightingsLayer)
-
-    def undo(self):
-        self.iface.activeLayer().undoStack().undo()
-
-    def redo(self):
-        self.iface.activeLayer().undoStack().redo()
-
     def onMergeAction(self) -> None:
         self.mergeDialog = SammoMergeDialog()
         self.mergeDialog.show()
