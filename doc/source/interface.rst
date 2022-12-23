@@ -5,6 +5,8 @@ Interface
 	:align: center
 	:width: 800
 
+|
+
 The present capture shows the operator profile that includes only Sammo-boat features.
 
 Toolbar
@@ -238,3 +240,8 @@ displayed:
 - |environment_symbol| environmenent 
 - |sighting_symbol| sightning 
 - |follower_symbol| follower 
+
+Sammo-boat add also two shortcut to zoom in/out the canvas easely:
+
+- ``Ctrl+<`` : zoom in canvas
+- ``Ctrl+>`` : zoom out canvas
